@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\BasketController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +16,7 @@ use App\Http\Controllers\ProductsController;
 |
 */
 
-Route::get('/', function () {
+Route::get('/home', function () {
     return view('home');
 });
 
@@ -22,3 +24,9 @@ Auth::routes();
 
 Route::get('/', [ProductsController::class, 'index'])->name('products');
 Route::get('/prod/{id}', [ProductsController::class, 'show'])->name('prod');
+
+Route::get('/basket/index', [BasketController::class, 'index'])->name('basketindex');
+Route::get('/basket/checkout', [BasketController::class, 'checkout'])->name('basket.checkout');
+Route::post('/basket/add/{id}', [BasketController::class, 'add'])
+    ->where('id', '[0-9]+')
+    ->name('basket.add');
