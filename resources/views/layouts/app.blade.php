@@ -28,9 +28,11 @@ integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4
                 <a class="navbar-brand" href="{{ url('/') }}">
                     Главная
                 </a>
+				@auth
 				<a class="navbar-brand" href="{{ url('/basket/index') }}">
                     Корзина
                 </a>
+				@endauth
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
                 </button>

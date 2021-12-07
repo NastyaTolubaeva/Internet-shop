@@ -73,7 +73,7 @@
             </tr>
         </table>
 		<a href="{{url('/basket/checkout')}}">Оформить заказ</a>
-	@andauth
+	@endauth
     @else
         <p>Ваша корзина пуста</p>
     @endif
