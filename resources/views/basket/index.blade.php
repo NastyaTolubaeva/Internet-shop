@@ -2,6 +2,7 @@
 
 @section('content')
     <h1>Ваша корзина</h1>
+	@auth
     @if (count($products))
         @php
             $basketCost = 0;
@@ -71,6 +72,8 @@
                 <th></th>
             </tr>
         </table>
+		<a href="{{url('/basket/checkout')}}">Оформить заказ</a>
+	@andauth
     @else
         <p>Ваша корзина пуста</p>
     @endif

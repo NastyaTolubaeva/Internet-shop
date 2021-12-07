@@ -13,7 +13,7 @@ class CreateBasketProductTable extends Migration
      */
     public function up()
     {
-        Schema::create('basket_products', function (Blueprint $table) {
+        Schema::create('basket_product', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('basket_id');
             $table->unsignedBigInteger('products_id');

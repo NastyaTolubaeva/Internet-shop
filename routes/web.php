@@ -25,8 +25,8 @@ Auth::routes();
 Route::get('/', [ProductsController::class, 'index'])->name('products');
 Route::get('/prod/{id}', [ProductsController::class, 'show'])->name('prod');
 
-Route::get('/basket/index', [BasketController::class, 'index'])->name('basketindex');
-Route::get('/basket/checkout', [BasketController::class, 'checkout'])->name('basket.checkout');
+Route::get('/basket/index', [BasketController::class, 'index'])->name('basket.index');
+Route::get('/basket/checkout', [BasketController::class, 'checkout'])->name('basketcheckout');
 Route::post('/basket/add/{id}', [BasketController::class, 'add'])
     ->where('id', '[0-9]+')
     ->name('basket.add');
@@ -42,3 +42,6 @@ Route::post('/basket/remove/{id}', [BasketController::class, 'remove'])
     ->where('id', '[0-9]+')
     ->name('basket.remove');
 Route::post('/basket/clear', [BasketController::class, 'clear'])->name('basket.clear');
+Route::post('/basket/saveorder', [BasketController::class, 'saveOrder'])->name('basket.saveorder');
+Route::get('/basket/success', [BasketController::class, 'success'])
+    ->name('basket.success');

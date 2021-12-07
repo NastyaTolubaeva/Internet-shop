@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Basket;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Cookie;
+use App\Models\Order;
+
 class BasketController extends Controller {
 	private $basket;
 
@@ -18,14 +20,14 @@ class BasketController extends Controller {
      */
     public function index() {
         $products = $this->basket->products;
-        return view('basketindex', compact('products'));
+        return view('basket.index', compact('products'));
     }
 
     /**
      * Форма оформления заказа
      */
     public function checkout() {
-        return view('basket.checkout');
+        return view('basketcheckout');
     }
 
     /**
@@ -45,7 +47,7 @@ class BasketController extends Controller {
     public function plus($id) {
         $this->basket->increase($id);
         // выполняем редирект обратно на страницу корзины
-        return redirect()->route('basketindex');
+        return redirect()->route('basket.index');
     }
 
     /**
@@ -54,7 +56,7 @@ class BasketController extends Controller {
     public function minus($id) {
         $this->basket->decrease($id);
         // выполняем редирект обратно на страницу корзины
-        return redirect()->route('basketindex');
+        return redirect()->route('basket.index');
     }
 
     /**
@@ -80,7 +82,7 @@ class BasketController extends Controller {
     public function remove($id) {
         $this->basket->remove($id);
         // выполняем редирект обратно на страницу корзины
-        return redirect()->route('basketindex');
+        return redirect()->route('basket.index');
     }
 
     /**
@@ -89,7 +91,56 @@ class BasketController extends Controller {
     public function clear() {
         $this->basket->delete();
         // выполняем редирект обратно на страницу корзины
-        return redirect()->route('basketindex');
+        return redirect()->route('basket.index');
     }
 
+	public function saveOrder(Request $request) {
+        // проверяем данные формы оформления
+        $this->validate($request, [
+            'name' => 'required|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|max:255',
+            'address' => 'required|max:255',
+        ]);
+
+        // валидация пройдена, сохраняем заказ
+        $basket = $this->basket;
+        $user_id = auth()->check() ? auth()->user()->id : null;
+        $order = Order::create(
+            $request->all() + ['amount' => $basket->getAmount(), 'user_id' => $user_id]
+        );
+
+        foreach ($basket->products as $product) {
+            $order->items()->create([
+                'product_id' => $product->id,
+                'name' => $product->title,
+                'price' => $product->cost,
+                'quantity' => $product->pivot->quantity,
+                'cost' => $product->cost * $product->pivot->quantity,
+            ]);
+        }
+
+        // уничтожаем корзину
+        $basket->delete();
+
+        return redirect()
+            ->route('basket.success')
+            ->with('order_id', $order->id);
+    }
+
+	 /**
+     * Сообщение об успешном оформлении заказа
+     */
+    public function success(Request $request) {
+        if ($request->session()->exists('order_id')) {
+            // сюда покупатель попадает сразу после успешного оформления заказа
+            $order_id = $request->session()->pull('order_id');
+            $order = Order::findOrFail($order_id);
+            return view('basket.success', compact('order'));
+        } else {
+            // если покупатель попал сюда случайно, не после оформления заказа,
+            // ему здесь делать нечего — отправляем на страницу корзины
+            return redirect()->route('basket.index');
+        }
+    }
 }

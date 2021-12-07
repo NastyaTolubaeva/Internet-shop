@@ -6,6 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Products;
 
 class Basket extends Model {
+	public function getAmount() {
+        $amount = 0.0;
+        foreach ($this->products as $product) {
+            $amount = $amount + $product->cost * $product->pivot->quantity;
+        }
+        return $amount;
+    }
     /**
      * Связь «многие ко многим» таблицы `baskets` с таблицей `products`
      */
