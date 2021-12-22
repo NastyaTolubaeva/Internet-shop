@@ -22,6 +22,7 @@ class CreateOrdersTable extends Migration
             $table->string('address');
             $table->string('comment')->nullable();
             $table->decimal('amount', 10, 2)->unsigned();
+            $table->boolean('status');
             $table->timestamps();
 
             // внешний ключ, ссылается на поле id таблицы users
