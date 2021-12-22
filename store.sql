@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost
--- Время создания: Дек 07 2021 г., 11:54
+-- Время создания: Дек 22 2021 г., 16:25
 -- Версия сервера: 10.4.20-MariaDB
 -- Версия PHP: 7.3.29
 
@@ -140,7 +140,9 @@ INSERT INTO `admin_operation_log` (`id`, `user_id`, `path`, `method`, `ip`, `inp
 (61, 1, 'admin/orders', 'GET', '127.0.0.1', '[]', '2021-12-07 06:38:44', '2021-12-07 06:38:44'),
 (62, 1, 'admin/users', 'GET', '127.0.0.1', '{\"_pjax\":\"#pjax-container\"}', '2021-12-07 06:41:14', '2021-12-07 06:41:14'),
 (63, 1, 'admin/products', 'GET', '127.0.0.1', '{\"_pjax\":\"#pjax-container\"}', '2021-12-07 06:41:15', '2021-12-07 06:41:15'),
-(64, 1, 'admin/orders', 'GET', '127.0.0.1', '{\"_pjax\":\"#pjax-container\"}', '2021-12-07 06:41:20', '2021-12-07 06:41:20');
+(64, 1, 'admin/orders', 'GET', '127.0.0.1', '{\"_pjax\":\"#pjax-container\"}', '2021-12-07 06:41:20', '2021-12-07 06:41:20'),
+(65, 1, 'admin/auth/login', 'POST', '127.0.0.1', '{\"username\":\"admin\",\"password\":\"admin\",\"_token\":\"jaOBSf6MWuW0fbYKBvcLPzqfLas4iQ4Oj7JeqyzR\"}', '2021-12-22 11:15:09', '2021-12-22 11:15:09'),
+(66, 1, 'admin', 'GET', '127.0.0.1', '[]', '2021-12-22 11:15:10', '2021-12-22 11:15:10');
 
 -- --------------------------------------------------------
 
@@ -307,7 +309,7 @@ CREATE TABLE `baskets` (
 --
 
 INSERT INTO `baskets` (`id`, `created_at`, `updated_at`) VALUES
-(1, '2021-12-07 03:48:26', '2021-12-07 03:48:26'),
+(1, '2021-12-07 03:48:26', '2021-12-22 11:23:52'),
 (2, '2021-12-07 03:53:40', '2021-12-07 03:53:40'),
 (3, '2021-12-07 03:53:49', '2021-12-07 03:53:49'),
 (4, '2021-12-07 03:54:00', '2021-12-07 03:54:00'),
@@ -362,19 +364,6 @@ INSERT INTO `baskets` (`id`, `created_at`, `updated_at`) VALUES
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `basket_product`
---
-
-CREATE TABLE `basket_product` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `basket_id` bigint(20) UNSIGNED NOT NULL,
-  `products_id` bigint(20) UNSIGNED NOT NULL,
-  `quantity` tinyint(3) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Структура таблицы `basket_products`
 --
 
@@ -384,22 +373,6 @@ CREATE TABLE `basket_products` (
   `products_id` bigint(20) UNSIGNED NOT NULL,
   `quantity` tinyint(3) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Дамп данных таблицы `basket_products`
---
-
-INSERT INTO `basket_products` (`id`, `basket_id`, `products_id`, `quantity`) VALUES
-(1, 11, 5, 5),
-(2, 11, 1, 2),
-(3, 16, 5, 1),
-(4, 18, 5, 1),
-(5, 19, 5, 1),
-(6, 21, 4, 1),
-(7, 23, 5, 3),
-(10, 48, 4, 1),
-(11, 50, 3, 1),
-(12, 52, 4, 1);
 
 -- --------------------------------------------------------
 
@@ -442,7 +415,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (9, '2021_12_07_060309_create_products_table', 2),
 (10, '2021_12_07_073129_create_baskets_table', 3),
 (13, '2021_12_07_093143_create_orders_table', 4),
-(14, '2021_12_07_093153_create_order_items_table', 4);
+(14, '2021_12_07_093153_create_order_items_table', 4),
+(15, '2021_12_07_073214_create_basket_products_table', 5);
 
 -- --------------------------------------------------------
 
@@ -662,19 +636,12 @@ ALTER TABLE `baskets`
   ADD PRIMARY KEY (`id`);
 
 --
--- Индексы таблицы `basket_product`
---
-ALTER TABLE `basket_product`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `basket_product_basket_id_foreign` (`basket_id`),
-  ADD KEY `basket_product_product_id_foreign` (`products_id`);
-
---
 -- Индексы таблицы `basket_products`
 --
 ALTER TABLE `basket_products`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `basket_products_basket_id_foreign` (`basket_id`);
+  ADD KEY `basket_products_basket_id_foreign` (`basket_id`),
+  ADD KEY `basket_products_products_id_foreign` (`products_id`);
 
 --
 -- Индексы таблицы `failed_jobs`
@@ -745,7 +712,7 @@ ALTER TABLE `admin_menu`
 -- AUTO_INCREMENT для таблицы `admin_operation_log`
 --
 ALTER TABLE `admin_operation_log`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT для таблицы `admin_permissions`
@@ -772,16 +739,10 @@ ALTER TABLE `baskets`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
--- AUTO_INCREMENT для таблицы `basket_product`
---
-ALTER TABLE `basket_product`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT для таблицы `basket_products`
 --
 ALTER TABLE `basket_products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `failed_jobs`
@@ -793,7 +754,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT для таблицы `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT для таблицы `orders`
@@ -830,17 +791,11 @@ ALTER TABLE `users`
 --
 
 --
--- Ограничения внешнего ключа таблицы `basket_product`
---
-ALTER TABLE `basket_product`
-  ADD CONSTRAINT `basket_product_basket_id_foreign` FOREIGN KEY (`basket_id`) REFERENCES `baskets` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `basket_product_product_id_foreign` FOREIGN KEY (`products_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
-
---
 -- Ограничения внешнего ключа таблицы `basket_products`
 --
 ALTER TABLE `basket_products`
-  ADD CONSTRAINT `basket_products_basket_id_foreign` FOREIGN KEY (`basket_id`) REFERENCES `baskets` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `basket_products_basket_id_foreign` FOREIGN KEY (`basket_id`) REFERENCES `baskets` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `basket_products_products_id_foreign` FOREIGN KEY (`products_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `orders`
