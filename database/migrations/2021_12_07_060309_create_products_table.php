@@ -17,6 +17,7 @@ class CreateProductsTable extends Migration
             $table->id();
 			$table->text('image');
 			$table->string('title');
+            $table->integer('cost');
 			$table->string('preview');
 			$table->text('content');
 			$table->boolean('is_active');
